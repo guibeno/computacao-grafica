@@ -1,0 +1,19 @@
+import numpy as np
+from PIL import Image
+import matplotlib
+
+
+
+#img_path = "c:\\Users\\1137015\Downloads\\atitus1-small.png" #adicionar o caminho local da imagem
+#img = np.array(Image.open(img_path).convert('L'))
+#print('resolução da imagem (largura x altura)\n',img.shape)
+#print('15 primeiros pixels da imagem\n',img[:15,:15])
+
+
+img_path = "c:\\Users\\1137015\Downloads\\RGB-small.png" #adicionar o caminho local da imagem
+img = np.array(Image.open(img_path).convert('RGB'))
+print('resolução da imagem (largura x altura x canais)\n',img.shape)
+print('buscando apenas o R (vermelho',img[:15, :15,0])
+
+
+
