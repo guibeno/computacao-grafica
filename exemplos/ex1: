@@ -1,0 +1,7 @@
+import numpy as np
+from PIL import Image
+
+img_path = "c:\\Users\\1137015\Downloads\\atitus1-small.png" #adicionar o caminho local da imagem
+img = np.array(Image.open(img_path).convert('L'))
+print('resolução da imagem (largura x altura)\n',img.shape)
+print('15 primeiros pixels da imagem\n',img[:15,:15])
