@@ -1,0 +1,3 @@
+.shape = Em Python, .shape é um atributo usado para obter ou definir a forma (dimensões) de um array ou matriz. Ele retorna uma tupla que descreve o número de elementos em cada dimensão. É amplamente utilizado em bibliotecas como NumPy e Pandas para 
+entender e manipular estruturas de dados. 
+.dype = .dtype é um atributo usado para descrever o tipo de dados de um objeto, como um array do NumPy ou uma coluna em um DataFrame do Pandas. Ele informa como os dados são armazenados na memória e como devem ser interpretados. 
