@@ -1,0 +1,26 @@
+import numpy as np
+from PIL import Image
+import matplotlib.pyplot as plt
+
+
+
+#img_path = "c:\\Users\\1137015\Downloads\\atitus1-small.png" #adicionar o caminho local da imagem
+#img = np.array(Image.open(img_path).convert('L'))
+#print('resolução da imagem (largura x altura)\n',img.shape)
+#print('15 primeiros pixels da imagem\n',img[:15,:15])
+
+
+img_path = "c:\\Users\\1137015\Downloads\\RGB-small.png" #adicionar o caminho local da imagem
+img = np.array(Image.open(img_path).convert('RGB'))
+print('resolução da imagem (largura x altura x canais)\n',img.shape)
+print('buscando apenas o R (vermelho\n',img[:15, :15,0])
+
+
+
+# imagem do canal vermelho
+plt.imshow(img[:, :, 0], cmap='gray')  # Apenas o canal vermelho
+plt.title('Canal R (vermelho)')
+plt.show()
+
+
+
