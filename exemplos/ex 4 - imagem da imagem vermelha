@@ -1,0 +1,7 @@
+# imagem do canal vermelho
+red_channel = np.zeros(img.shape,img.dtype)
+red_channel[:, :, 0] = img[:, :, 0] 
+
+plt.imshow(red_channel, cmap='gray')  # Apenas o canal vermelho
+plt.title('Canal R (vermelho)')
+plt.show()
