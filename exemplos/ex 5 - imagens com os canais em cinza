@@ -1,0 +1,7 @@
+# imagem dos canais em cinza
+canais_cinza = np.zeros(img.shape,img.dtype)
+canais_cinza = 0.299 * img[:, :, 0] + 0.587 * img[:,:,1] + 0.114 * img[:,:,2]
+
+plt.imshow(canais_cinza, cmap='gray')  
+plt.title('Canal R (vermelho)')
+plt.show()
