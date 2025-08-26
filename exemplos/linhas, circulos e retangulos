@@ -1,0 +1,25 @@
+import cv2
+import numpy as np
+
+
+
+img = np.ones((400, 600, 3), dtype=np.uint8) * 255
+## linhas
+cv2.line(img, (0, 0), (600, 400), (0, 0, 255), 3)
+cv2.line(img, (0, 0), (400, 600), (255, 0, 0), 3)
+
+## retangulo
+cv2.rectangle(img,(200, 150), (400, 300), (0,0,255) ,3)
+
+# circulo
+cv2.circle(img,(100,100),(60),(255,100,150),-1)
+
+
+# texto
+cv2.putText(img,('dentro do'),(230,210),cv2.FONT_HERSHEY_SIMPLEX,1,(100,100,100),2)
+cv2.putText(img,('quadrado'),(235,240),cv2.FONT_HERSHEY_SIMPLEX,1,(100,100,100),2)
+
+
+cv2.imshow('Canvas', img)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
