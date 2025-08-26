@@ -1,0 +1,17 @@
+import cv2
+
+imagem = cv2.imread("C:\\Users\\1137015\\Pictures\\images.jfif")
+
+imagem_cinza = cv2.cvtColor(imagem, cv2.COLOR_BGR2GRAY)
+
+imagem_RGB = cv2.cvtColor(imagem, cv2.COLOR_BGR2RGB)
+
+if imagem is None:
+    print('erro ao carregar a imagem')
+else:
+    cv2.imshow('Imagem',imagem)
+    cv2.imshow('Imagem cinza',imagem_cinza)
+    cv2.imshow('Imagem em RGD', imagem_RGB)
+
+cv2.waitKey()
+cv2.destroyAllWindows()
