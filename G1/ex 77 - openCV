@@ -1,0 +1,36 @@
+import cv2
+import numpy as np
+
+imagem = cv2.imread("C:\\baixados\\atitus1.png")
+imagem_original = cv2.imread("C:\\baixados\\atitus1.png")
+imagem[:,50] = [0,0,255]
+imagem[:,100] = [0,0,255]
+imagem[:,150] = [0,0,255]
+ 
+
+
+imagem_recortada = imagem[:,:950]
+
+
+imagem_recortada[30, :] = [0,255,0]
+imagem_recortada[60,:] = [0,255,0]
+imagem_recortada[90,:] = [0,255,0]
+imagem_recortada[120,:] = [0,255,0]
+
+
+cv2.line(imagem_recortada, (0,0), (950,994), (255,0,0), 2)
+
+imagem_espelhada = cv2.flip(imagem_recortada, 1)
+
+imagem_final = np.hstack((imagem_espelhada,imagem_original))
+
+
+
+cv2.imshow('Imagem', imagem_final)
+
+print('resolução da imagem (largura x altura x canais)\n',imagem.shape)
+print('resolução da imagem recortada (largura x altura x canais)\n',imagem_recortada.shape)
+
+cv2.waitKey(0)
+
+cv2.destroyAllWindows()
