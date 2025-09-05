@@ -1,0 +1,27 @@
+
+import cv2
+import numpy as np
+
+
+imagem = cv2.imread("C:\\baixados\\PixelArt-Car-small.png")
+
+
+altura, largura, canais = imagem.shape
+
+print('Resolução da imagem (largura x altura x canais):', imagem.shape)
+
+
+for i in range(altura):
+    for g in range(largura):
+        pixel_atual = imagem[i, g]
+        if pixel_atual[2] >= 100:     
+            imagem[i, g, 1] = 255      
+            imagem[i, g, 2] = 0    
+
+cv2.imshow('imagem', imagem)
+
+
+
+cv2.waitKey(0)
+
+cv2.destroyAllWindows()
