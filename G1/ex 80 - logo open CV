@@ -1,0 +1,13 @@
+import cv2
+
+imagem = cv2.imread("C:\\Users\\1137015\\Downloads\\opencvlogo.png")
+
+altura, largura, canais = imagem.shape
+
+print(altura,largura,canais)
+
+cv2.imshow('imagem', imagem)
+
+cv2.waitKey(0)
+
+cv2.destroyAllWindows()
