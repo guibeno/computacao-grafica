@@ -1,12 +1,59 @@
 import cv2
+import numpy as np
 
-imagem = cv2.imread("C:\\Users\\1137015\\Downloads\\opencvlogo.png")
+imagem = cv2.imread("C:\\baixados\\opencvlogo.png")
 
-altura, largura, canais = imagem.shape
+altura_, largura_, canais_ = imagem.shape
+print(altura_,largura_,canais_)
 
-print(altura,largura,canais)
 
-cv2.imshow('imagem', imagem)
+
+imagem_recortada = imagem [150:,165:] 
+imagem_recortada_final = imagem_recortada [:145,:]
+
+
+
+altura, largura, canais = imagem_recortada_final.shape
+
+centro = altura/2, largura/2
+
+pontos = np.array([
+    [0, 0],
+    [largura, 0],
+    [largura, altura],
+    [0, altura]
+])
+
+
+pontos_imagem = np.hstack([pontos, np.ones((pontos.shape[0], 1))]) 
+
+matriz_de_rotacao = cv2.getRotationMatrix2D(centro, 45, 0.85)
+
+imagem_rotacionada = cv2.warpAffine(imagem_recortada_final, matriz_de_rotacao, (largura, altura),borderValue=(255, 255, 255))
+
+
+#cv2.imshow('imagem cortada',imagem_rotacionada)
+
+y, x = 150, 165
+h = 145
+w = largura_ - x
+
+
+imagem_final = imagem.copy()
+imagem_final[y:y+h, x:x+w] = imagem_rotacionada
+
+
+cv2.rectangle(imagem_final, (10, 330), (480, 450), (255,255,255), -1)
+
+cv2.putText(imagem_final,('Guilherme'),(55,350),cv2.FONT_HERSHEY_SIMPLEX,1.5,(100,100,100),2)
+
+
+
+cv2.imshow('Imagem com recorte rotacionado colado', imagem_final)
+
+
+
+
 
 cv2.waitKey(0)
 
