@@ -1,8 +1,10 @@
 def rasterizar_bresanham(ponto_1x,ponto_1y,ponto_2x,ponto_2y):
     valor_x = ponto_2x - ponto_1x # valores finais de x e y
     valor_y = ponto_2y - ponto_1y
+    print('valor inicial x: ', valor_x,'valor de y: ', valor_y)
 
     ponto_0 = 2 * valor_y - valor_x # calculo inicial de p0
+   
 
     x = ponto_1x # pontos iniciais para começar a loop
     y = ponto_1y
@@ -12,9 +14,11 @@ def rasterizar_bresanham(ponto_1x,ponto_1y,ponto_2x,ponto_2y):
         
         if ponto_0 < 0: # se p for menor que 0 entao o y nao muda e tentamos achar o valor ideal de p
             ponto_0 += 2 * valor_y
+            print('ponto < 0 / p:',ponto_0,' valor de y:',valor_y)
         else:
             y+=1  # se nao (p = > 0) ja consideramos que o y vai andar 1
             ponto_0 += 2 * (valor_y - valor_x) # correção do erro acumulado
+            print('ponto > 0 / p:',ponto_0,' valor de x:',valor_x)
 
         print(f"Pixel: ({x}, {y})")
 
