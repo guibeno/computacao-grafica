@@ -1,0 +1,20 @@
+def raterizar_dda(ponto_1X,ponto_1Y,ponto_2X,ponto_2Y):
+    valor_x = ponto_2X - ponto_1X
+    valor_y = ponto_2Y - ponto_1Y
+
+    
+    passos = max(abs(valor_x), abs(valor_y)) #valor absoluto so pode ser positivo maior entre valor de x e de y
+    
+    divisao_x = valor_x / passos
+    divisao_y = valor_y / passos
+    
+    x = ponto_1X  #pontos iniciais
+    y = ponto_1Y
+    
+
+    for _ in range(passos + 1):  
+        print(f"({round(x)}, {round(y)})") # round arredonta um numero inteiro para o mais proximo, se nao ficaria y = 2.5 por exemplo
+        x += divisao_x
+        y += divisao_y
+        
+raterizar_dda(2,2,6,4)
