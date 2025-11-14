@@ -1,0 +1,10 @@
+#version 330 core
+
+in vec3 vColor; // recebendo a cor
+
+out vec4 FragColor; // saída final do pixel
+
+void main()
+{
+    FragColor = vec4(vColor, 1.0); // cor com alpha
+}
