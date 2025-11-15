@@ -1,10 +1,73 @@
-
 import glfw
 from OpenGL.GL import *
 import numpy as np
 import ctypes
 import math
 import time
+from PIL import Image
+import time
+
+grayMode = False
+kernel_mudou = False
+
+
+
+# ---- kernels ---  
+
+def aplicar_kernel(numero):
+    # Definição dos kernels em listas Python
+    
+    kernel_blur = np.array([
+        1, 1, 1,
+        1, 1, 1,
+        1, 1, 1
+    ], dtype=np.float32) / 9.0
+
+    kernel_sharpen = np.array( [
+        0, -1, 0,
+        -1, 5, -1,
+        0, -1, 0
+    ], dtype=np.float32)
+
+    kernel_emboss = np.array([
+        -2, -1, 0,
+        -1,  1, 1,
+         0,  1, 2
+    ], dtype=np.float32)
+
+    kernel_bordas_hor = np.array([
+        -1, -1, -1,
+         0,  0,  0,
+         1,  1,  1
+    ], dtype=np.float32)
+
+    kernel_bordas_ver = np.array( [
+         1,  0, -1,
+         1,  0, -1,
+         1,  0, -1
+    ], dtype=np.float32)
+    
+    kernel_identity = np.array([
+        0, 0, 0,
+        0, 1, 0,
+        0, 0, 0
+    ], dtype=np.float32)
+    
+    if numero == 0:
+        return kernel_identity
+    if numero == 1:
+        return kernel_blur
+    elif numero == 2:
+        return kernel_sharpen
+    elif numero == 3:
+        return kernel_emboss
+    elif numero == 4:
+        return kernel_bordas_hor
+    elif numero == 5:
+        return kernel_bordas_ver
+    else: None
+    
+
 
 # ---------------- MATRIZES -----------------
 def rotate_y(angulo):
@@ -92,6 +155,7 @@ muda_posicao_camera_x = 0
 muda_posicao_camera_y = 0
 rotacao_x = 0
 rotacao_y = 0
+kernel = np.ones(9, dtype=np.float32) / 9.0
 
 def key_callback(window, key, scancode, action, mods):
     global muda_posicao_camera_z
@@ -99,38 +163,101 @@ def key_callback(window, key, scancode, action, mods):
     global muda_posicao_camera_y 
     global rotacao_x
     global rotacao_y
-    if key == glfw.KEY_S and action == glfw.PRESS:
+    global kernel
+    global kernel_mudou
+    if key == glfw.KEY_S and action != glfw.RELEASE:
         muda_posicao_camera_z += 0.20
-    if key == glfw.KEY_W and action == glfw.PRESS:
+    if key == glfw.KEY_W and action != glfw.RELEASE:
         muda_posicao_camera_z -= 0.20
         
         
-    if key == glfw.KEY_D and action == glfw.PRESS:
+    if key == glfw.KEY_D and action != glfw.RELEASE:
         muda_posicao_camera_x += 0.20
-    if key == glfw.KEY_A and action == glfw.PRESS:
+    if key == glfw.KEY_A and action != glfw.RELEASE:
         muda_posicao_camera_x -= 0.20
         
-    if key == glfw.KEY_LEFT_SHIFT and action == glfw.PRESS:
+    if key == glfw.KEY_LEFT_SHIFT and action != glfw.RELEASE:
         muda_posicao_camera_y += 0.20
-    if key == glfw.KEY_SPACE and action == glfw.PRESS:
+    if key == glfw.KEY_SPACE and action != glfw.RELEASE:
         muda_posicao_camera_y -= 0.20
         
-    if key == glfw.KEY_RIGHT and action == glfw.PRESS:
+    if key == glfw.KEY_RIGHT and action != glfw.RELEASE:
         rotacao_y += 0.20
-    if key == glfw.KEY_LEFT and action == glfw.PRESS:
+    if key == glfw.KEY_LEFT and action != glfw.RELEASE:
         rotacao_y -= 0.20
         
-    if key == glfw.KEY_UP and action == glfw.PRESS:
+    if key == glfw.KEY_UP and action != glfw.RELEASE:
         rotacao_x += 0.20
-    if key == glfw.KEY_DOWN and action == glfw.PRESS:
+    if key == glfw.KEY_DOWN and action != glfw.RELEASE:
         rotacao_x -= 0.20
         
+    if key == glfw.KEY_1 and action != glfw.RELEASE:
+        numero = 1
+        kernel = aplicar_kernel(numero)
+        kernel_mudou = True
+    if key == glfw.KEY_2 and action != glfw.RELEASE:
+        numero = 2
+        kernel = aplicar_kernel(numero)
+        kernel_mudou = True
+    if key == glfw.KEY_3 and action != glfw.RELEASE:
+        numero = 3
+        kernel = aplicar_kernel(numero)
+        kernel_mudou = True
+    if key == glfw.KEY_4 and action != glfw.RELEASE:
+        numero = 4
+        kernel = aplicar_kernel(numero)
+        kernel_mudou = True
+    if key == glfw.KEY_5 and action != glfw.RELEASE:
+        numero = 5
+        kernel = aplicar_kernel(numero)
+        kernel_mudou = True
+
+        
+        
+def mouse_callback(window, button, action, mods):
+    global grayMode, kernelType   # << ADICIONAR ISTO
+    global muda_posicao_camera_z
+    global muda_posicao_camera_x
+    global muda_posicao_camera_y 
+    global rotacao_x
+    global rotacao_y
+    global kernel
+    global grayMode
+
+    if button == glfw.MOUSE_BUTTON_RIGHT and action == glfw.PRESS:
+        kernelType = 0 # Resetar para original
+        rotacao_x = 0
+        rotacao_y = 0
+        muda_posicao_camera_x = 0
+        muda_posicao_camera_y = 0
+        muda_posicao_camera_z = 5
+        kernel = aplicar_kernel(0)
+        
+    if button == glfw.MOUSE_BUTTON_LEFT and action == glfw.PRESS:
+        grayMode = not grayMode
+        
+
+ 
+
+
+textura = None    
+def load_texture(path):
+    global textura
     
-#    if key == glfw.KEY_T and action == glfw.PRESS:
-#        translate_object(...)
-#    if key == glfw.KEY_S and action == glfw.PRESS:
-#        scale_object(...)
-#
+    image = Image.open(path).convert('RGB')
+    image_data = image.transpose(Image.FLIP_TOP_BOTTOM).tobytes()
+    width, height = image.size
+    textura = glGenTextures(1)
+    glBindTexture(GL_TEXTURE_2D, textura)
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image_data)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+    glBindTexture(GL_TEXTURE_2D, 0)
+
+    return textura
+
+
+
 
 def main():
     if not glfw.init():
@@ -144,25 +271,81 @@ def main():
     glfw.make_context_current(window)
     
     glfw.set_key_callback(window, key_callback)
+    glfw.set_mouse_button_callback(window, mouse_callback)
+
+    
+    path = 'C:\\Users\\1137015\\Downloads\\templo (1).jpg'
+    texture_id = None
+    
+    global grayMode
+    global kernel_mudou 
+    
    
     
 
 
 
     vertices = np.array([
--0.5, -0.5, -1.0, 1.0, 0.0, 0.0, #V1
-0.5, -0.5, -1.0, 0.0, 1.0, 0.0, #V2
-0.0, 0.5, -1.0, 0.0, 0.0, 1.0 #V3
+# ---- FACE 1: FRENTE (+Z) ----
+# Triângulo 1
+# Posição (X, Y, Z) | Textura (U, V)
+-0.5, -0.5, 0.5, 0.0, 0.0, # 0: Inferior Esquerdo (UV: 0, 0)
+0.5, -0.5, 0.5, 1.0, 0.0, # 1: Inferior Direito (UV: 1, 0)
+0.5, 0.5, 0.5, 1.0, 1.0, # 2: Superior Direito (UV: 1, 1)
+# Triângulo 2
+-0.5, -0.5, 0.5, 0.0, 0.0, # 3: Inferior Esquerdo (UV: 0, 0)
+0.5, 0.5, 0.5, 1.0, 1.0, # 4: Superior Direito (UV: 1, 1)
+-0.5, 0.5, 0.5, 0.0, 1.0, # 5: Superior Esquerdo (UV: 0, 1)
+# ---- FACE 2: TRÁS (-Z) ----
+# Triângulo 3
+-0.5, -0.5, -0.5, 1.0, 0.0, # 6: Inferior Esquerdo
+0.5, -0.5, -0.5, 0.0, 0.0, # 7: Inferior Direito
+0.5, 0.5, -0.5, 0.0, 1.0, # 8: Superior Direito
+# Triângulo 4
+-0.5, -0.5, -0.5, 1.0, 0.0, # 9
+0.5, 0.5, -0.5, 0.0, 1.0, # 10
+-0.5, 0.5, -0.5, 1.0, 1.0, # 11
+
+# ---- FACE 3: ESQUERDA (-X) ----
+# Triângulo 5
+-0.5, -0.5, 0.5, 1.0, 0.0, # 12
+-0.5, -0.5, -0.5, 0.0, 0.0, # 13
+-0.5, 0.5, -0.5, 0.0, 1.0, # 14
+# Triângulo 6
+-0.5, -0.5, 0.5, 1.0, 0.0, # 15
+-0.5, 0.5, -0.5, 0.0, 1.0, # 16
+-0.5, 0.5, 0.5, 1.0, 1.0, # 17
+# ---- FACE 4: DIREITA (+X) ----
+# Triângulo 7
+0.5, -0.5, -0.5, 1.0, 0.0, # 18
+0.5, -0.5, 0.5, 0.0, 0.0, # 19
+0.5, 0.5, 0.5, 0.0, 1.0, # 20
+# Triângulo 8
+0.5, -0.5, -0.5, 1.0, 0.0, # 21
+0.5, 0.5, 0.5, 0.0, 1.0, # 22
+0.5, 0.5, -0.5, 1.0, 1.0, # 23
+# ---- FACE 5: FUNDO (-Y) ----
+# Triângulo 9
+-0.5, -0.5, -0.5, 0.0, 0.0, # 24
+0.5, -0.5, -0.5, 1.0, 0.0, # 25
+0.5, -0.5, 0.5, 1.0, 1.0, # 26
+# Triângulo 10
+-0.5, -0.5, -0.5, 0.0, 0.0, # 27
+0.5, -0.5, 0.5, 1.0, 1.0, # 28
+-0.5, -0.5, 0.5, 0.0, 1.0, # 29
+# ---- FACE 6: TOPO (+Y) ----
+# Triângulo 11
+-0.5, 0.5, 0.5, 0.0, 0.0, # 30
+0.5, 0.5, 0.5, 1.0, 0.0, # 31
+0.5, 0.5, -0.5, 1.0, 1.0, # 32
+# Triângulo 12
+-0.5, 0.5, 0.5, 0.0, 0.0, # 33
+0.5, 0.5, -0.5, 1.0, 1.0, # 34
+-0.5, 0.5, -0.5, 0.0, 1.0 # 35
+
 ], dtype=np.float32)
     
-    square_vertices = np.array([
--0.3, -0.3, -2.0, 1.0, 0.5, 0.2, # T1 V1
-0.3, -0.3, -2.0, 1.0, 0.5, 0.2, # T1 V2
-0.3, 0.3, -2.0, 1.0, 0.5, 0.2, # T1 V3
--0.3, -0.3, -2.0, 1.0, 0.5, 0.2, # T2 V1
-0.3, 0.3, -2.0, 1.0, 0.5, 0.2, # T2 V2
--0.3, 0.3, -2.0, 1.0, 0.5, 0.2 # T2 V3
-], dtype=np.float32)
+
 
     VAO = glGenVertexArrays(1)
     VBO = glGenBuffers(1)
@@ -170,37 +353,21 @@ def main():
     glBindVertexArray(VAO)
     glBindBuffer(GL_ARRAY_BUFFER, VBO)
     glBufferData(GL_ARRAY_BUFFER, vertices.nbytes, vertices, GL_STATIC_DRAW)
+    
+    stride = 5 * 4  # 5 floats por vértice, cada float = 4 bytes
 
     # posição
     glEnableVertexAttribArray(0)
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6*4, ctypes.c_void_p(0))
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, ctypes.c_void_p(0))
     
     glEnableVertexAttribArray(1)
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6*4, ctypes.c_void_p(3*4))
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, stride, ctypes.c_void_p(3*4))
 
     glBindBuffer(GL_ARRAY_BUFFER, 0)
     glBindVertexArray(0)
     
-    # --- vbo/vao quadrado
     
-    vao_quadrado = glGenVertexArrays(1)
-    vbo_quadrado = glGenBuffers(1)
-    
-    glBindVertexArray(vao_quadrado)
-    glBindBuffer(GL_ARRAY_BUFFER,vbo_quadrado)
-    glBufferData(GL_ARRAY_BUFFER, square_vertices.nbytes, square_vertices, GL_STATIC_DRAW)
-
-    
-     # posição
-    glEnableVertexAttribArray(0)
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6*4, ctypes.c_void_p(0))
-    
-    glEnableVertexAttribArray(1)
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6*4, ctypes.c_void_p(3*4))
-    
-    glBindBuffer(GL_ARRAY_BUFFER, 0)
-    glBindVertexArray(0)
-    
+  
 
     with open('vertex_shader.glsl', 'r') as f:
         vs_code = f.read()
@@ -226,6 +393,9 @@ def main():
     start = time.time()
     aspect = 800/600
     
+    
+    texture_id = load_texture(path)
+    
     while not glfw.window_should_close(window):
         glClearColor(0.2, 0.2, 0.25, 1.0)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -247,15 +417,33 @@ def main():
 
         proj = get_projection_matrix(45.0, aspect, 0.1, 100.0)
         
+        loc_gray = glGetUniformLocation(shader_program, "grayMode")
+        glUniform1i(loc_gray, int(grayMode))
+        
+        
+        # Bind da textura
+        glActiveTexture(GL_TEXTURE0)
+        glBindTexture(GL_TEXTURE_2D, texture_id)
+
+        # Uniform do sampler
+        loc_tex = glGetUniformLocation(shader_program, "frameColor")
+        glUniform1i(loc_tex, 0)
+        
 
         mvp = proj @ view_matrix @ model
         glUniformMatrix4fv(mvp_loc, 1, GL_FALSE, mvp.T)
+        glUniform1fv(glGetUniformLocation(shader_program, "kernel"), 9, kernel)
+        
+        
 
         glBindVertexArray(VAO)
-        glDrawArrays(GL_TRIANGLES, 0, 3)
-        
-        glBindVertexArray(vao_quadrado)
-        glDrawArrays(GL_TRIANGLES, 0, 6)
+        frame_start = time.time()
+        glDrawArrays(GL_TRIANGLES, 0, 36)
+        frame_end = time.time()
+        if kernel_mudou:
+            print("Tempo de renderização do kernel:", (frame_end - frame_start) * 1000, "ms")
+            kernel_mudou = False
+       
 
         glfw.swap_buffers(window)
         glfw.poll_events()
